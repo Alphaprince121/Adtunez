@@ -10,9 +10,10 @@ const Page: React.FC = () => {
     const [showToCalendar, setShowToCalendar] = useState<boolean>(false);
     const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
     const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
-    const [error, setError] = useState<string | null>(null); // Error state
+    const [error, setError] = useState<string | null>(null);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const today = new Date(); // Get today's date
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -44,23 +45,35 @@ const Page: React.FC = () => {
     const handleFromDateChange = (date: Date) => {
         setCustomStartDate(date);
         setShowFromCalendar(false);
-        setError(null); // Clear error when a valid date is selected
+        setError(null);
     };
 
     const handleToDateChange = (date: Date) => {
         setCustomEndDate(date);
         setShowToCalendar(false);
-        setError(null); // Clear error when a valid date is selected
+        setError(null);
     };
+
+    useEffect(() => {
+        if (customStartDate && customEndDate) {
+            if (customStartDate >= customEndDate) {
+                setError("Start date should be less than end date!");
+            } else if (customStartDate > today || customEndDate > today) {
+                setError("Dates cannot be in the future!");
+            } else {
+                setError(null);
+            }
+        }
+    }, [customStartDate, customEndDate]);
 
     const handleApply = () => {
         if (!customStartDate || !customEndDate) {
-            setError("Both start and end dates must be selected."); // Show error if any date is missing
+            setError("Both start and end dates must be selected.");
         } else {
             setSelectedOption(`${formatDate(customStartDate)} - ${formatDate(customEndDate)}`);
             setIsDropdownOpen(false);
             setShowCustomDiv(false);
-            setError(null); // Clear error when dates are valid
+            setError(null);
         }
     };
 
@@ -71,7 +84,7 @@ const Page: React.FC = () => {
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => {
-                                setIsDropdownOpen((prev) => !prev)
+                                setIsDropdownOpen((prev) => !prev);
                                 if (showCustomDiv) {
                                     setShowCustomDiv(false);
                                 }
@@ -93,17 +106,19 @@ const Page: React.FC = () => {
                                 <div className="p-2 ">
                                     <h1 className="cursor-pointer font-normal text-[12px] hover:bg-gray-100 p-2 leading-[21px]" onClick={() => {
                                         setSelectedOption("None");
+                                        setCustomStartDate(null);
+                                        setCustomEndDate(null);
                                         setIsDropdownOpen(false);
                                         setShowCustomDiv(false);
-
                                     }}>
                                         None
                                     </h1>
                                     <h1 className="cursor-pointer font-normal text-[12px] hover:bg-gray-100 p-2 leading-[21px]" onClick={() => {
                                         setSelectedOption("Previous Period");
+                                        setCustomStartDate(null);
+                                        setCustomEndDate(null);
                                         setIsDropdownOpen(false);
                                         setShowCustomDiv(false);
-
                                     }}>
                                         Previous Period
                                     </h1>
@@ -117,6 +132,7 @@ const Page: React.FC = () => {
                                 </div>
                             </div>
                         )}
+
                         {showCustomDiv && (
                             <div className="absolute mt-1 w-56 bg-white border border-gray-300 rounded-lg z-10 p-4 space-y-3">
                                 <h1 className="text-[#333333] font-medium text-[12px] leading-[20px]">From</h1>
@@ -128,7 +144,7 @@ const Page: React.FC = () => {
                                         className="h-4 cursor-pointer"
                                         onClick={() => {
                                             setShowFromCalendar((prev) => !prev);
-                                            setShowToCalendar(false); // Close the 'To' calendar when opening 'From'
+                                            setShowToCalendar(false);
                                         }}
                                     />
                                     {showFromCalendar && (
@@ -147,7 +163,7 @@ const Page: React.FC = () => {
                                         className="h-4 cursor-pointer"
                                         onClick={() => {
                                             setShowToCalendar((prev) => !prev);
-                                            setShowFromCalendar(false); // Close the 'From' calendar when opening 'To'
+                                            setShowFromCalendar(false);
                                         }}
                                     />
                                     {showToCalendar && (
@@ -157,13 +173,13 @@ const Page: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Error Message */}
                                 {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 
                                 <button
                                     onClick={handleApply}
-                                    className="w-full mt-3 py-2 px-4 bg-[#5C3FF3] font-semibold text-[14px ] leading-[20px] text-white rounded-md"
-                                >
+                                    disabled={!!error}
+                                    className={`w-full mt-3 py-2 px-4 font-semibold text-[14px] leading-[20px] rounded-md 
+                                        ${error ? 'bg-gray-300 text-black' : 'bg-[#5C3FF3] text-white'}`}>
                                     Apply
                                 </button>
                             </div>

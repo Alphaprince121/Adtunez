@@ -83,12 +83,18 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
             const isSelected =
                 selectedDate &&
                 selectedDate.toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+            
             days.push(
                 <div
                     key={`current-${day}`}
-                    className={`p-2 text-center rounded-md cursor-pointer font-normal text-[#333333] text-[14px] leading-[15px] font-poppins ${isSelected ? 'bg-[#5C3FF3] text-white' : 'hover:bg-[#F3F3FF]'
+                    className={`p-2 ${(new Date(currentDate.getFullYear(), currentDate.getMonth(), day) > new Date()) && "opacity-50"} text-center rounded-md cursor-pointer font-normal text-[#333333] text-[14px] leading-[15px] font-poppins ${isSelected ? 'bg-[#5C3FF3] text-white' : 'hover:bg-[#F3F3FF]'
                         }`}
-                    onClick={() => onDateChange(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
+                    onClick={() => {
+                        if(new Date(currentDate.getFullYear(), currentDate.getMonth(), day) <= new Date()) {
+                            console.log("new Date(currentDate.getFullYear(), currentDate.getMonth(), day) :", new Date(currentDate.getFullYear(), currentDate.getMonth(), day))
+                            onDateChange(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
+                        }
+                    } 
                 >
                     {day}
                 </div>
@@ -99,14 +105,17 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
         const totalCells = days.length;
         const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
         for (let i = 1; i <= remainingCells; i++) {
+            const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i);
             days.push(
                 <div
-                    key={`next-${i}`}
-                    className="p-2 text-center text-[#808080] cursor-pointer hover:bg-blue-100 rounded-lg text-[14px]"
-                    onClick={() => {
-                        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i);
-                        onDateChange(nextMonth);
-                        setCurrentDate(nextMonth);
+                key={`next-${i}`}
+                className={`p-2 text-center text-[#808080] ${(nextMonth > new Date()) && "opacity-50"} cursor-pointer hover:bg-blue-100 rounded-lg text-[14px]`}
+                onClick={() => {
+                    if(nextMonth <= new Date()) {
+                            console.log("nextMonth :", nextMonth)
+                            onDateChange(nextMonth);
+                            setCurrentDate(nextMonth);
+                        }
                     }}
                 >
                     {i}
