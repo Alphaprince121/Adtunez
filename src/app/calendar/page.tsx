@@ -10,7 +10,7 @@ interface CalendarProps {
 const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
     const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
     const [showYearPicker, setShowYearPicker] = useState(false);
-    
+
 
     useEffect(() => {
         if (selectedDate) {
@@ -35,15 +35,21 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
     };
 
     const renderYearPicker = () => {
-        const currentYear = currentDate.getFullYear();
-        const years = Array.from({ length: 100 }, (_, i) => currentYear - 50 + i);
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: 100 }, (_, i) => currentYear - 49 + i); // Show only past and current years
+
         return (
             <div className="grid grid-cols-4 gap-2 p-2 h-[220px] overflow-y-auto">
                 {years.map((year) => (
                     <div
                         key={year}
-                        className="p-2 text-center cursor-pointer rounded-lg hover:bg-[#F3F3FF] font-poppins text-[14px]"
-                        onClick={() => handleYearClick(year)}
+                        className={`p-2 text-center cursor-pointer rounded-lg hover:bg-[#F3F3FF] font-poppins text-[14px] ${year > currentYear ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                        onClick={() => {
+                            if (year <= currentYear) {
+                                handleYearClick(year);
+                            }
+                        }}
                     >
                         {year}
                     </div>
@@ -51,6 +57,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
             </div>
         );
     };
+
 
     const renderDays = () => {
         const days = [];
@@ -83,18 +90,19 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
             const isSelected =
                 selectedDate &&
                 selectedDate.toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
-            
+
             days.push(
                 <div
                     key={`current-${day}`}
                     className={`p-2 ${(new Date(currentDate.getFullYear(), currentDate.getMonth(), day) > new Date()) && "opacity-50"} text-center rounded-md cursor-pointer font-normal text-[#333333] text-[14px] leading-[15px] font-poppins ${isSelected ? 'bg-[#5C3FF3] text-white' : 'hover:bg-[#F3F3FF]'
                         }`}
                     onClick={() => {
-                        if(new Date(currentDate.getFullYear(), currentDate.getMonth(), day) <= new Date()) {
+                        if (new Date(currentDate.getFullYear(), currentDate.getMonth(), day) <= new Date()) {
                             console.log("new Date(currentDate.getFullYear(), currentDate.getMonth(), day) :", new Date(currentDate.getFullYear(), currentDate.getMonth(), day))
-                            onDateChange(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
+                            onDateChange(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))
                         }
-                    } 
+                    }
+                    }
                 >
                     {day}
                 </div>
@@ -108,10 +116,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateChange }) => {
             const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i);
             days.push(
                 <div
-                key={`next-${i}`}
-                className={`p-2 text-center text-[#808080] ${(nextMonth > new Date()) && "opacity-50"} cursor-pointer hover:bg-blue-100 rounded-lg text-[14px]`}
-                onClick={() => {
-                    if(nextMonth <= new Date()) {
+                    key={`next-${i}`}
+                    className={`p-2 text-center text-[#808080] ${(nextMonth > new Date()) && "opacity-50"} cursor-pointer  rounded-lg text-[14px]`}
+                    onClick={() => {
+                        if (nextMonth <= new Date()) {
                             console.log("nextMonth :", nextMonth)
                             onDateChange(nextMonth);
                             setCurrentDate(nextMonth);

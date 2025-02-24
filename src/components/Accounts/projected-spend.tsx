@@ -7,14 +7,14 @@ type ChartData = {
     averageEarning?: number;
     cumulativeEarnings?: number;
     projectedMonthlyEarnings?: number;
-    day: number; // include day in the type definition
+    day: number;
 };
 
 
 const generateChartData = (daysInMonth: number) => {
     return Array.from({ length: daysInMonth }, (_, i) => ({
         day: i + 1,  // Add day index (1-based)
-        earning: (i + 1) * 100, // Example earning per day
+        earning: (i + 50) * 10, // Example earning per day
     }));
 };
 
@@ -61,7 +61,7 @@ const calculateAverages = (monthlyTarget: number, chartData: ChartData[]) => {
     return { dataWithAvg, requiredDailySpend, cumulativeEarnings, projectedMonthlyEarnings };
 };
 
-const monthlyTarget = 25000;  // Set your monthly target here
+const monthlyTarget = 14600;  // Set your monthly target here
 const { currentDay, lastDayOfMonth } = getCurrentMonthData();
 const chartData = generateChartData(lastDayOfMonth);
 const { dataWithAvg, requiredDailySpend, cumulativeEarnings, projectedMonthlyEarnings } = calculateAverages(monthlyTarget, chartData);
@@ -112,11 +112,10 @@ const Page = () => {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <ComposedChart data={dataWithAvg} margin={{ top: 20, right: 30, left: 0, bottom: 5 }} >
                                             <XAxis dataKey="day" tick={false} />
-                                            <YAxis tick={{ fill: "#333333", fontSize:"12px", fontWeight:"700" }} />
+                                            <YAxis tick={{ fill: "#333333", fontSize: "12px", fontWeight: "700" }} />
                                             <Tooltip content={<CustomTooltip />} />
                                             <ReferenceLine y={monthlyTarget} strokeWidth={2} stroke="#FF6347" strokeDasharray="3 3" />
 
-                                            <Line type="monotone" dot={false} dataKey="cumulativeEarnings" stroke="#04D97F" strokeWidth={3} connectNulls={true} />
 
                                             <Bar dataKey="earning" barSize={50} fill="#4623E9" radius={[2, 2, 0, 0]}
                                                 // @ts-ignore
@@ -124,31 +123,33 @@ const Page = () => {
                                                     ...item,
                                                     earning: item.day === lastDayOfMonth ? totalEarnings : 0, //totalEarning is calculate from the dataWithAvg
                                                 }))} />
-                                                
+                                            <Line type="monotone" top={40} dot={false} dataKey="cumulativeEarnings" stroke="#04D97F" strokeWidth={3} connectNulls={true} />
+
                                         </ComposedChart>
                                     </ResponsiveContainer>
                                 </div>
-                                <div className='  flex justify-center gap-5 cursor-pointer'>
-                                        {[
-                                            { color: "#FF6666", label: "Target Budget" },
-                                            { color: "#FFBF1C", label: "Spend till today" },
-                                            { color: "#4623E9", label: "Projected Spend" },
-                                        ].map(({ color, label }, i) => (
-                                            <div className="flex items-center gap-1" key={i}>
-                                                <div
-                                                    className="h-3 w-3 rounded-full p-2 relative flex items-center justify-center "
-                                                    style={{ backgroundColor: color }}
-                                                >
-                                                    {/* White circle in the center */}
-                                                    <div className="h-2 w-2 rounded-full bg-white absolute" />
-                                                </div>
-                                                <h1 className="text-[10px] font-semibold text-gray-800">{label}</h1>
+                                <div className="flex justify-center gap-5 cursor-pointer">
+                                    {[
+                                        { color: "#FF6666", label: "Target Budget" },
+                                        { color: "#FFBF1C", label: "Spend till today" },
+                                        { color: "#4623E9", label: "Projected Spend" },
+                                    ].map(({ color, label }, i) => (
+                                        <div className="flex items-center gap-1" key={i}>
+                                            <div
+                                                className="h-4 w-4 rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: color }}
+                                            >
+                                                {/* White circle in the center */}
+                                                <div className="h-2 w-2 rounded-full bg-white" />
                                             </div>
-                                        ))}
-                                    </div>
+                                            <h1 className="text-[10px] font-semibold text-gray-800">{label}</h1>
+                                        </div>
+                                    ))}
+                                </div>
+
                             </div>
                         </div>
-                        
+
 
                     </div>
                 </div>

@@ -1,0 +1,22 @@
+.header {
+    position: relative;
+    /* padding-left: 20px; */
+}
+
+.header::before {
+    content: "";
+    position: absolute;
+    top: 0px;
+    left: 0;
+    height: 22px;
+    border-left: 2px solid black;
+}
+
+.header>div:last-child::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0px;
+    height: 41px;
+    border-left: 2px solid black;
+}

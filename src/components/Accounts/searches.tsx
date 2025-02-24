@@ -146,7 +146,7 @@ const Page = () => {
                             >
                                 {item}
                             </h1>
-                            <div className="hidden group-hover:block -left-28 absolute shadow-lg z-50 bg-white w-[370px] p-4 rounded-md">
+                            <div className="hidden group-hover:block -left-32 absolute shadow-lg z-50 bg-white w-[370px] p-4 rounded-md">
                                 <div className="flex justify-between items-center border px-3 py-2 rounded-md mb-4">
                                     <div className="flex gap-3">
                                         <img src="/icons/google.svg" alt="" />

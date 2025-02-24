@@ -97,11 +97,11 @@ const Page = () => {
                     ))}
 
                     {/* Color Legend */}
-                    <div className="flex gap-5 cursor-pointer">
+                    <div className="flex gap-4 cursor-pointer">
                         {colorLabels.map(({ color, label }, i) => (
                             <div key={i} className="flex items-center gap-2">
-                                <div className="h-3 w-3 rounded-full flex items-center justify-center relative" style={{ backgroundColor: color }}>
-                                    <div className="h-2 w-2 rounded-full bg-white absolute" />
+                                <div className="h-4 w-4 rounded-full flex items-center justify-center " style={{ backgroundColor: color }}>
+                                    <div className="h-2 w-2 rounded-full bg-white " />
                                 </div>
                                 <h1 className="text-[12px] font-normal text-[#333333]">{label}</h1>
                             </div>
