@@ -1,84 +1,88 @@
 "use client";
 
-import { useReducer } from "react";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { useReducer, useState } from "react";
 import { treeData } from "../../components/Google-ads/data";
 
+// Define the TreeNode type
 interface TreeNode {
     id: string;
     email?: string;
     children?: TreeNode[];
 }
 
-interface TreeState {
-    expandedNodes: Record<string, boolean>;
-}
+// Reducer for toggling expansion
+type TreeAction = { type: "TOGGLE" };
+const treeReducer = (state: boolean, action: TreeAction): boolean => !state;
 
-type TreeAction = { type: "TOGGLE_NODE"; id: string };
-
-const treeReducer = (state: TreeState, action: TreeAction): TreeState => {
-    const { id } = action;
-    const updatedNodes = { ...state.expandedNodes, [id]: !state.expandedNodes[id] };
-
-    // Collapse all child nodes when parent is collapsed
-    if (!updatedNodes[id]) {
-        Object.keys(updatedNodes).forEach((key) => {
-            if (key.startsWith(id + "-")) {
-                delete updatedNodes[key];
-            }
-        });
-    }
-
-    return { expandedNodes: updatedNodes };
-};
-
-// Function to get all node IDs from treeData recursively
-const getAllNodeIds = (nodes: TreeNode[]): Record<string, boolean> => {
-    let ids: Record<string, boolean> = {};
-    nodes.forEach((node) => {
-        ids[node.id] = true; // Expand the current node
-        if (node.children) {
-            ids = { ...ids, ...getAllNodeIds(node.children) }; // Merge child nodes
-        }
-    });
-    return ids;
-};
-
+// TreeNode Component
 const TreeNodeComponent = ({
-    isFirstParent,
     node,
-    toggleNode,
-    isExpanded,
+    depth = 0,
+    isLast = false
 }: {
-    isFirstParent: boolean;
     node: TreeNode;
-    toggleNode: (id: string) => void;
-    isExpanded: (id: string) => boolean;
+    depth?: number;
+    isLast?: boolean;
 }) => {
+    const [isExpanded, dispatch] = useReducer(treeReducer, true);
+
     return (
-        <div className="relative p-1">
+        <div className="relative pl-4">
+            {/* Node Item */}
             <div
-                className="flex items-center gap-2 cursor-pointer py-2 pl-4 hover:bg-gray-100 transition-all duration-200"
-                onClick={() => toggleNode(node.id)}
+                className="flex items-center space-x-2 cursor-pointer py-1 pl-4 hover:bg-gray-100 transition-all duration-200"
+                onClick={() => dispatch({ type: "TOGGLE" })}
             >
-                <div className="flex items-center justify-start">
-                    {!isFirstParent && (
-                        <div className="h-[1px] bg-[#333333] w-[10px] -ml-5 mr-2"></div>
-                    )}
-                    <h1 className="font-medium text-[12px] leading-[18px] text-[#333333]">{node.id}</h1>
-                    {node.email && <p className="text-[12px] leading-[18px] font-normal text-gray-500 ml-1">- Linked from {node.email}</p>}
-                </div>
-                {node.children && (
-                    <span className="text-gray-500  ">
-                        {isExpanded(node.id) ? <FaChevronDown className="h-3" /> : <FaChevronRight className="h-3" />}
+                {/* Connector Lines */}
+                <span className="relative">
+                    {depth > 0 && !isLast ? (
+                        <div className="absolute flex -left-4 top-0 w-4 h-full">
+                            <span className="h-[38px] border-[1px] border-[#333333] z-50"></span>
+                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-[50%] z-50"></span>
+                        </div>
+
+                    ) : depth > 0 && isLast ? (
+
+                        <div className="absolute flex -left-4 top-0 w-4 h-[70%]">
+                            <span className="h-full border-[1px] border-[#333333] z-50"></span>
+                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-auto z-50"></span>
+                        </div>
+                    ) : null}
+                    <div className="flex">
+                        <span className="text-[#333333] font-medium text-[12px] leading-[18px]">{node.id}</span>
+                        {node.email && (
+                            <p className="text-[12px] leading-[18px] font-normal text-[#333333] ml-1">
+                                - Linked from {node.email}
+                            </p>
+                        )}
+                    </div>
+                </span>
+
+                {/* Expand/Collapse Icon */}
+                {node.children && node.children.length > 0 && (
+                    <span className="cursor-pointer">
+                        {isExpanded ? (
+                            <img src="/icons/down-arrow.png" className="h-[7px]" />
+                        ) : (
+                            <img src="/icons/down-arrow.png" className="h-[7px] -rotate-90" />
+                        )}
                     </span>
                 )}
+
+                {/* Node Label */}
+
             </div>
 
-            {isExpanded(node.id) && node.children && (
-                <div className="ml-4 border-l-2 border-height-[20%] border-[#333333] ">
-                    {node.children.map((child) => (
-                        <TreeNodeComponent isFirstParent={false} key={child.id} node={child} toggleNode={toggleNode} isExpanded={isExpanded} />
+            {/* Render Children */}
+            {isExpanded && (node.children?.length ?? 0) > 0 && (
+                <div className="ml-4">
+                    {node.children?.map((child, index) => (
+                        <TreeNodeComponent
+                            key={child.id}
+                            node={child}
+                            depth={depth + 1}
+                            isLast={index === node.children!.length - 1}
+                        />
                     ))}
                 </div>
             )}
@@ -86,16 +90,33 @@ const TreeNodeComponent = ({
     );
 };
 
+// Tree View Component
 export default function TreeView() {
-    // Initialize the expandedNodes state with all nodes set to true
-    const [state, dispatch] = useReducer(treeReducer, { expandedNodes: getAllNodeIds(treeData) });
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const toggleNode = (id: string) => dispatch({ type: "TOGGLE_NODE", id });
-    const isExpanded = (id: string) => !!state.expandedNodes[id];
+    // Function to filter tree nodes
+    const filterTree = (nodes: TreeNode[]): TreeNode[] => {
+        return nodes
+            .map((node) => {
+                const match =
+                    node.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (node.email && node.email.toLowerCase().includes(searchTerm.toLowerCase()));
+
+                const filteredChildren = node.children ? filterTree(node.children) : [];
+
+                if (match || filteredChildren.length > 0) {
+                    return { ...node, children: filteredChildren };
+                }
+
+                return null;
+            })
+            .filter(Boolean) as TreeNode[];
+    };
+
+    const filteredData = searchTerm ? filterTree(treeData) : treeData;
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg w-[1108px] mt-20 mx-auto">
-            {/* Header */}
+        <div className="p-6 bg-white shadow-lg rounded-lg w-[1108px] mt-10 mx-auto">
             <div className="flex justify-between items-center">
                 <h1 className="text-[16px] font-medium leading-[20px] text-[#333333]">
                     Google Ads Accounts Under <span className="font-bold">adt764489@gmail.com</span>
@@ -107,21 +128,24 @@ export default function TreeView() {
                         <input
                             type="search"
                             placeholder="Search"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="bg-transparent outline-none text-[12px] leading-[20px] font-medium text-[#898D9F] w-full"
                         />
                     </div>
                     {/* Menu Button */}
-                    <button className="border border-gray-300 p-2 rounded-md hover:bg-gray-200 transition flex items-center justify-center">
+                    <button className="border p-2 rounded-md flex items-center justify-center">
                         <img src="/icons/menu.png" alt="Menu" className="h-[14px] w-[17px] opacity-80" />
                     </button>
                 </div>
             </div>
 
-            {/* Tree View */}
-            <div className="border rounded-md my-3 py-3 px-8">
-                {treeData.map((node) => (
-                    <TreeNodeComponent isFirstParent={true} key={node.id} node={node} toggleNode={toggleNode} isExpanded={isExpanded} />
-                ))}
+            <div className="border rounded-md my-3 py-2 px-8">
+                {filteredData.length > 0 ? (
+                    filteredData.map((node) => <TreeNodeComponent key={node.id} node={node} />)
+                ) : (
+                    <p className="text-gray-500 text-sm text-center">No results found.</p>
+                )}
             </div>
         </div>
     );

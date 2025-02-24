@@ -2,41 +2,69 @@
 
 import { useReducer, useState } from "react";
 import { treeData } from "../../components/Google-ads/data";
-import './style.css'
 
+// Define the TreeNode type
 interface TreeNode {
     id: string;
     email?: string;
+    label?:string;
     children?: TreeNode[];
 }
 
+// Reducer for toggling expansion
 type TreeAction = { type: "TOGGLE" };
+const treeReducer = (state: boolean, action: TreeAction): boolean => !state;
 
-const treeReducer = (state: boolean, action: TreeAction): boolean => {
-    return !state; // Toggle the expanded state
-};
-
-const TreeNodeComponent = ({ node, isChild = false }: { node: TreeNode; isChild?: boolean }) => {
+// TreeNode Component
+const TreeNodeComponent = ({
+    node,
+    depth = 0,
+    isLast = false
+}: {
+    node: TreeNode;
+    depth?: number;
+    isLast?: boolean;
+}) => {
     const [isExpanded, dispatch] = useReducer(treeReducer, true);
 
     return (
-        <div className="relative p-1">
+        <div className="relative pl-4">
+            {/* Node Item */}
             <div
-                className="flex items-center gap-2 cursor-pointer py-2 pl-4 hover:bg-gray-100 transition-all duration-200"
+                className="flex items-center space-x-2 cursor-pointer py-1 pl-4 hover:bg-gray-100 transition-all duration-200"
                 onClick={() => dispatch({ type: "TOGGLE" })}
             >
-                <div className="flex  items-center justify-start">
-                    {isChild && <div className="h-[1.5px] bg-[#333333] w-[10px] -ml-5 mr-2"></div>}
+                {/* Connector Lines */}
+                <span className="relative">
+                    {depth > 0 && !isLast ? (
+                        <div className="absolute flex -left-4 top-0 w-4 h-full">
+                            <span className="h-[38px] border-[1px] border-[#333333] z-50 "></span>
+                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-[50%] z-50"></span>
+                        </div>
 
-                    <h1 className="font-medium text-[12px] leading-[18px] text-[#333333]">{node.id}</h1>
-                    {node.email && (
-                        <p className="text-[12px] leading-[18px] font-normal text-gray-500 ml-1">
-                            - Linked from {node.email}
-                        </p>
-                    )}
-                </div>
-                {node.children && (
-                    <span className="text-gray-500">
+                    ) : depth > 0 && isLast ? (
+
+                        <div className="absolute flex -left-4 top-0 w-4 h-[70%]">
+                            <span className="h-full border-[1px] border-[#333333] z-50"></span>
+                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-auto z-50"></span>
+                        </div>
+                    ) : null}
+                    <div className="flex items-center">
+                        <div className="flex gap-1">
+                        <h1 className="text-[#333333] font-medium text-[12px] leading-[18px] ">{node.id}</h1>
+                        <h1 className="text-[#333333] font-medium text-[12px] leading-[18px]"> - {node.label}</h1>
+                        </div>
+                        {node.email && (
+                            <p className="text-[12px] leading-[18px] font-normal text-[#333333] ml-1">
+                                - Linked from {node.email}
+                            </p>
+                        )}
+                    </div>
+                </span>
+
+                {/* Expand/Collapse Icon */}
+                {node.children && node.children.length > 0 && (
+                    <span className="cursor-pointer">
                         {isExpanded ? (
                             <img src="/icons/down-arrow.png" className="h-[7px]" />
                         ) : (
@@ -44,12 +72,21 @@ const TreeNodeComponent = ({ node, isChild = false }: { node: TreeNode; isChild?
                         )}
                     </span>
                 )}
+
+                {/* Node Label */}
+
             </div>
 
-            {isExpanded && node.children && (
-                <div className="ml-4 border-l-2 border-[#333333]">
-                    {node.children.map((child) => (
-                        <TreeNodeComponent key={child.id} node={child} isChild={true} />
+            {/* Render Children */}
+            {isExpanded && (node.children?.length ?? 0) > 0 && (
+                <div className="ml-4">
+                    {node.children?.map((child, index) => (
+                        <TreeNodeComponent
+                            key={child.id}
+                            node={child}
+                            depth={depth + 1}
+                            isLast={index === node.children!.length - 1}
+                        />
                     ))}
                 </div>
             )}
@@ -57,10 +94,11 @@ const TreeNodeComponent = ({ node, isChild = false }: { node: TreeNode; isChild?
     );
 };
 
+// Tree View Component
 export default function TreeView() {
     const [searchTerm, setSearchTerm] = useState("");
 
-    // function to filter tree nodes
+    // Function to filter tree nodes
     const filterTree = (nodes: TreeNode[]): TreeNode[] => {
         return nodes
             .map((node) => {
@@ -106,7 +144,7 @@ export default function TreeView() {
                 </div>
             </div>
 
-            <div className="border rounded-md my-3 py-3 px-8">
+            <div className="border rounded-md my-3 space-y-2 py-3 px-8">
                 {filteredData.length > 0 ? (
                     filteredData.map((node) => <TreeNodeComponent key={node.id} node={node} />)
                 ) : (
