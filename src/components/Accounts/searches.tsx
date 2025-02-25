@@ -61,7 +61,7 @@ const Page = () => {
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="px-[12px] flex items-center justify-between py-2 rounded-md border border-gray-300 text-[#333333]  focus:outline-none font-medium text-[12px] leading-[20px] cursor-pointer min-w-[80px] gap-[25px]">
                                 {selectedOption}
-                                <img src="/icons/down-arrow.png" alt="" className="h-2 w-3 object-contain" />
+                                <img src="/icons/down-arrow.png" alt="" className="h-2.5 w-2.5 object-contain" />
                             </button>
                             {isDropdownOpen && (
                                 <div className="absolute mt-1 w-32 bg-white border font-medium border-gray-300 rounded-md shadow-lg z-10">

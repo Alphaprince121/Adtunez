@@ -168,7 +168,7 @@ const GenderAgeChart = () => {
                                 />
                             ))}
                         </div>
-                    ))}
+                    ))} 
                 </div>
 
                 <div className="text-transparent">-</div>
@@ -247,7 +247,7 @@ const Dropdown = ({ selectedOption, setSelectedOption }: { selectedOption: strin
                                 <div className="relative">
                                     <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm flex justify-between items-center">
                                         {option.label}
-                                        <img src="/icons/down-arrow.png" alt="arrow" className="w-2 h-1 -rotate-90" />
+                                        <img src="/icons/down-arrow.png" alt="arrow" className="w-2.5 h2.5 -rotate-90" />
                                     </div>
                                     {openNestedDropdown === option.value && (
                                         <div className="absolute px-2 left-full -top-28 w-52 bg-white border border-gray-300 rounded-md shadow-lg">

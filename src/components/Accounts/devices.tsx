@@ -119,7 +119,7 @@ const Page = () => {
                             className="px-[12px] py-2 flex items-center justify-between rounded-md border border-gray-300 text-[#333333] focus:outline-none font-medium text-[12px] leading-[20px] cursor-pointer min-w-[120px] gap-[25px]"
                         >
                             {selectedOption1}
-                            <img src="/icons/down-arrow.png" alt="Dropdown arrow" className="h-2 w-3 object-contain" />
+                            <img src="/icons/down-arrow.png" alt="Dropdown arrow" className="h-2.5 w-2.5 object-contain" />
                         </button>
                         {dropdown1Open && (
                             <div className="absolute w-32 bg-white border font-medium border-gray-300 rounded-md shadow-lg z-10">
@@ -147,7 +147,7 @@ const Page = () => {
                             className="px-[12px] py-2 flex items-center justify-between rounded-md border border-gray-300 text-[#333333] focus:outline-none font-medium text-[12px] leading-[20px] cursor-pointer min-w-[120px] gap-[25px]"
                         >
                             {selectedOption2}
-                            <img src="/icons/down-arrow.png" alt="Dropdown arrow" className="h-2 w-3 object-contain" />
+                            <img src="/icons/down-arrow.png" alt="Dropdown arrow" className="h-2.5 w-2.5 object-contain" />
                         </button>
                         {dropdown2Open && (
                             <div ref={Dropdown2Ref} className="absolute mt-1 w-32 bg-white border font-medium border-gray-300 rounded-md shadow-lg z-10" style={{

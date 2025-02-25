@@ -31,7 +31,7 @@ const Page = () => {
                             <img
                                 src="/icons/down-arrow.png"
                                 alt="Dropdown arrow"
-                                className="h-2 w-3 object-contain"
+                                className="h-2.5 w-2.5 object-contain"
                             />
                         </button>
                         {isDropdownOpen && (
