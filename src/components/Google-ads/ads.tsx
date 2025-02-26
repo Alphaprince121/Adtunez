@@ -38,15 +38,15 @@ const TreeNodeComponent = ({
                 <span className="relative">
                     {depth > 0 && !isLast ? (
                         <div className="absolute flex -left-4 top-0 w-4 h-full">
-                            <span className="h-[38px] border-[1px] border-[#333333] z-50 "></span>
-                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-[50%] z-50"></span>
+                            <span className="h-[38px] border-[1px] border-[#898D9F] z-50 "></span>
+                            <span className="w-[70%] h-[1px] border-[#898D9F] border-[1px] mt-[50%] z-50"></span>
                         </div>
 
                     ) : depth > 0 && isLast ? (
 
                         <div className="absolute flex -left-4 top-0 w-4 h-[70%]">
-                            <span className="h-full border-[1px] border-[#333333] z-50"></span>
-                            <span className="w-[70%] h-[1px] border-[#333333] border-[1px] mt-auto z-50"></span>
+                            <span className="h-full border-[1px] border-[#898D9F] z-50"></span>
+                            <span className="w-[70%] h-[1px] border-[#898D9F] border-[1px] mt-auto z-50"></span>
                         </div>
                     ) : null}
                     <div className="flex items-center">
